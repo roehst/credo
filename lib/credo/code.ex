@@ -62,6 +62,24 @@ defmodule Credo.Code do
 
     accumulated
   end
+  @doc """
+  Traverses a given `Credo.SourceFile`'s AST or a given AST.
+
+  Technically this is just a wrapper around `Macro.traverse/4`.
+  """
+  def traverse(ast_or_source_file, pre, post, accumulator \\ [])
+
+  def traverse(%SourceFile{} = source_file, pre, post, accumulator) do
+    source_file
+    |> SourceFile.ast()
+    |> traverse(fun, pre, post)
+  end
+
+  def traverse(source_ast, fun, pre, post) do
+    {_, accumulated} = Macro.traverse(source_ast, accumulator, pre, post)
+
+    accumulated
+  end
 
   @doc """
   Returns an AST for a given `String` or `Credo.SourceFile`.
